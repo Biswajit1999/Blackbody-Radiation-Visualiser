@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackbody Radiation Visualiser</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>Blackbody Radiation Visualiser</h1>
+      <p>
+        Explore how stellar temperature changes the shape of a blackbody curve,
+        peak wavelength, and apparent colour.
+      </p>
+    </section>
+
+    <section class="dashboard">
+      <div class="controls">
+        <h2>Controls</h2>
+
+        <label>Temperature: <span id="tempValue">5778</span> K</label>
+        <input type="range" id="temperature" min="2500" max="12000" value="5778" step="10" />
+
+        <div class="buttons">
+          <button data-t="3000">Cool red star</button>
+          <button data-t="5778">Sun-like star</button>
+          <button data-t="10000">Hot blue star</button>
+        </div>
+
+        <div class="stats">
+          <div>
+            <span>Peak wavelength</span>
+            <strong id="peakValue">501.5 nm</strong>
+          </div>
+          <div>
+            <span>Visible colour trend</span>
+            <strong id="colourTrend">Yellow-white</strong>
+          </div>
+          <div>
+            <span>Law used</span>
+            <strong>Wien’s Law</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="visual">
+        <canvas id="canvas" width="1000" height="560"></canvas>
+      </div>
+    </section>
+
+    <section class="explanation">
+      <h2>Physics idea</h2>
+      <p>
+        A blackbody emits radiation across many wavelengths. As temperature increases,
+        the peak of the curve shifts towards shorter wavelengths, making hotter stars
+        appear bluer and cooler stars appear redder.
+      </p>
+      <p class="equation">λmax = b / T</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
