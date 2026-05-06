@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="images/hero.png" alt="Blackbody Radiation Visualiser" width="900">
+  <img src="images/blackbody_hero.png" width="900">
 </p>
 
 # Blackbody Radiation Visualiser
 
-> Interactive astrophysics tool combining Python plotting and web-based visualisation of blackbody radiation.
+> Interactive astrophysics tool combining Python modelling and web-based visualisation.
 
 ## What this project does
 
@@ -18,6 +18,47 @@ Users can explore:
 - approximate stellar colour trend
 - visible wavelength range
 
+## Visual Understanding
+
+### Blackbody Radiation Curves
+
+<p align="center">
+  <img src="images/blackbody_multi_curves.png" width="800">
+</p>
+
+These curves show how the intensity and peak wavelength change with temperature.  
+Hotter objects emit more energy and peak at shorter wavelengths.
+
+---
+
+### Wien’s Law (Peak Shift)
+
+<p align="center">
+  <img src="images/wiens_law_shift.png" width="800">
+</p>
+
+As temperature increases, the peak wavelength shifts toward shorter (bluer) wavelengths.
+
+---
+
+### Stellar Temperature and Colour
+
+<p align="center">
+  <img src="images/stellar_temperature_sequence.png" width="800">
+</p>
+
+Stars appear red, yellow, or blue depending on their surface temperature.
+
+---
+
+### Electromagnetic Spectrum Context
+
+<p align="center">
+  <img src="images/em_spectrum_blackbody.png" width="800">
+</p>
+
+The visible spectrum is only a small part of the full emission range.
+
 ## Physics background
 
 A blackbody emits radiation across a continuous range of wavelengths. The peak wavelength depends on temperature:
@@ -26,9 +67,9 @@ A blackbody emits radiation across a continuous range of wavelengths. The peak w
 
 where:
 
-- λmax is the wavelength of maximum emission
-- b is Wien’s displacement constant
-- T is temperature in Kelvin
+- λ_max = peak wavelength
+- T = temperature (K)
+- b = 2.898 × 10⁻³ m·K
 
 As temperature increases, the peak shifts towards shorter wavelengths.
 
