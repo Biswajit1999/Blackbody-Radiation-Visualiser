@@ -6,7 +6,13 @@ const tempValue = document.getElementById("tempValue");
 const peakValue = document.getElementById("peakValue");
 const colourTrend = document.getElementById("colourTrend");
 
-const B = 2.897771955e6;
+const B = 2.897771955e6; // Wien constant in nm K
+
+const referenceCurves = [
+  { T: 3000, label: "3000 K", colour: "#ef4444" },
+  { T: 5000, label: "5000 K", colour: "#f97316" },
+  { T: 8000, label: "8000 K", colour: "#e5e7eb" }
+];
 
 function planckRelative(lambdaNm, T) {
   const lambda = lambdaNm * 1e-9;
@@ -44,7 +50,7 @@ function getColourText(T) {
   return "Blue-white";
 }
 
-function drawStars() {
+function drawStarsBackground() {
   for (let i = 0; i < 150; i++) {
     ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.55})`;
     ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.1, 1.1);
@@ -54,8 +60,8 @@ function drawStars() {
 function drawVisibleSpectrum() {
   const x0 = wavelengthToX(380);
   const x1 = wavelengthToX(750);
-  const grad = ctx.createLinearGradient(x0, 0, x1, 0);
 
+  const grad = ctx.createLinearGradient(x0, 0, x1, 0);
   grad.addColorStop(0, "#4f46e5");
   grad.addColorStop(0.2, "#2563eb");
   grad.addColorStop(0.4, "#22c55e");
@@ -66,12 +72,15 @@ function drawVisibleSpectrum() {
   ctx.fillStyle = grad;
   ctx.fillRect(x0, 470, x1 - x0, 24);
 
-  ctx.fillStyle = "#94a3b8";
+  ctx.strokeStyle = "rgba(255,255,255,0.5)";
+  ctx.strokeRect(x0, 470, x1 - x0, 24);
+
+  ctx.fillStyle = "#cbd5e1";
   ctx.font = "14px Arial";
-  ctx.fillText("Visible light", x0 + 110, 512);
+  ctx.fillText("Visible light: 380–750 nm", x0 + 75, 512);
 }
 
-function drawCurve(T) {
+function drawCurve(T, colour, lineWidth = 3, alpha = 1) {
   const values = [];
   let maxI = 0;
 
@@ -81,8 +90,10 @@ function drawCurve(T) {
     if (I > maxI) maxI = I;
   }
 
-  ctx.strokeStyle = getStarColour(T);
-  ctx.lineWidth = 4;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = colour;
+  ctx.lineWidth = lineWidth;
   ctx.beginPath();
 
   values.forEach((p, i) => {
@@ -93,31 +104,60 @@ function drawCurve(T) {
   });
 
   ctx.stroke();
+  ctx.restore();
+}
+
+function drawPeakMarker(T, colour, labelPrefix = "") {
+  const peak = B / T;
+  const x = wavelengthToX(peak);
+
+  ctx.save();
+  ctx.strokeStyle = colour;
+  ctx.fillStyle = colour;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 6]);
+
+  ctx.beginPath();
+  ctx.moveTo(x, 160);
+  ctx.lineTo(x, 450);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+  ctx.beginPath();
+  ctx.arc(x, 160, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.font = "13px Arial";
+  ctx.fillText(`${labelPrefix}${T} K`, x + 8, 155);
+  ctx.fillText(`λmax ≈ ${peak.toFixed(0)} nm`, x + 8, 172);
+
+  ctx.restore();
 }
 
 function drawStar(T) {
   const cx = 500;
-  const cy = 105;
+  const cy = 95;
   const colour = getStarColour(T);
 
-  const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, 90);
+  const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, 85);
   glow.addColorStop(0, "#ffffff");
   glow.addColorStop(0.18, colour);
   glow.addColorStop(1, "rgba(255,255,255,0)");
 
   ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.arc(cx, cy, 90, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 85, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = colour;
   ctx.beginPath();
-  ctx.arc(cx, cy, 36, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 34, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#e2e8f0";
   ctx.font = "16px Arial";
-  ctx.fillText("Stellar colour changes with temperature", 370, 32);
+  ctx.fillText("User-selected stellar temperature", 390, 30);
 }
 
 function drawAxes() {
@@ -134,15 +174,83 @@ function drawAxes() {
   ctx.fillStyle = "#cbd5e1";
   ctx.font = "15px Arial";
   ctx.fillText("Wavelength (nm)", 430, 540);
+
   ctx.save();
   ctx.translate(30, 350);
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText("Relative intensity", 0, 0);
+  ctx.fillText("Normalised relative intensity", 0, 0);
   ctx.restore();
 
   ctx.fillStyle = "#94a3b8";
-  ctx.fillText("100 nm", 70, 468);
-  ctx.fillText("3000 nm", 870, 468);
+  ctx.font = "13px Arial";
+
+  const ticks = [100, 380, 750, 1500, 3000];
+  ticks.forEach(tick => {
+    const x = wavelengthToX(tick);
+    ctx.beginPath();
+    ctx.moveTo(x, 450);
+    ctx.lineTo(x, 458);
+    ctx.stroke();
+    ctx.fillText(`${tick}`, x - 14, 474);
+  });
+}
+
+function drawLegend(userT) {
+  const x = 720;
+  const y = 80;
+
+  ctx.fillStyle = "rgba(2,6,23,0.75)";
+  ctx.strokeStyle = "rgba(148,163,184,0.35)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(x - 18, y - 28, 210, 130, 14);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#e2e8f0";
+  ctx.font = "14px Arial";
+  ctx.fillText("Reference curves", x, y - 8);
+
+  const items = [
+    { label: "3000 K", colour: "#ef4444" },
+    { label: "5000 K", colour: "#f97316" },
+    { label: "8000 K", colour: "#e5e7eb" },
+    { label: `User: ${userT} K`, colour: getStarColour(userT) }
+  ];
+
+  items.forEach((item, i) => {
+    const yy = y + 18 + i * 22;
+    ctx.strokeStyle = item.colour;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x, yy);
+    ctx.lineTo(x + 32, yy);
+    ctx.stroke();
+
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "13px Arial";
+    ctx.fillText(item.label, x + 42, yy + 4);
+  });
+}
+
+function drawTemperatureArrow() {
+  ctx.strokeStyle = "#93c5fd";
+  ctx.fillStyle = "#93c5fd";
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.moveTo(640, 135);
+  ctx.lineTo(410, 135);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(400, 135);
+  ctx.lineTo(420, 125);
+  ctx.lineTo(420, 145);
+  ctx.fill();
+
+  ctx.font = "14px Arial";
+  ctx.fillText("Hotter stars peak at shorter wavelengths", 360, 122);
 }
 
 function update() {
@@ -157,25 +265,21 @@ function update() {
   ctx.fillStyle = "#020617";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  drawStars();
+  drawStarsBackground();
   drawStar(T);
   drawAxes();
   drawVisibleSpectrum();
-  drawCurve(T);
 
-  const peakX = wavelengthToX(peak);
-  ctx.strokeStyle = "#facc15";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([8, 8]);
-  ctx.beginPath();
-  ctx.moveTo(peakX, 160);
-  ctx.lineTo(peakX, 450);
-  ctx.stroke();
-  ctx.setLineDash([]);
+  referenceCurves.forEach(curve => {
+    drawCurve(curve.T, curve.colour, 2.5, 0.65);
+    drawPeakMarker(curve.T, curve.colour);
+  });
 
-  ctx.fillStyle = "#facc15";
-  ctx.font = "15px Arial";
-  ctx.fillText(`Peak: ${peak.toFixed(1)} nm`, peakX + 10, 185);
+  drawCurve(T, getStarColour(T), 5, 1);
+  drawPeakMarker(T, getStarColour(T), "User ");
+
+  drawTemperatureArrow();
+  drawLegend(T);
 }
 
 document.querySelectorAll("button[data-t]").forEach(button => {
