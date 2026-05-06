@@ -88,6 +88,19 @@ Blackbody radiation is important in:
 
 [Try the interactive tool](https://biswajit1999.github.io/blackbody-radiation-visualiser/web/)
 
+## Licence and attribution
+
+Code in this repository is released under the MIT Licence.
+
+Images, diagrams, written explanations, and educational content are © 2026 Biswajit Jana unless otherwise stated.  
+Please credit this repository if you reuse or adapt any visual or explanatory material.
+Educational images and written explanations are licensed under CC BY 4.0.
+Attribution is required.
+
+Suggested attribution:
+
+“Blackbody Radiation Visualiser by Biswajit Jana — https://github.com/Biswajit1999/blackbody-radiation-visualiser”
+
 ## Python version
 
 Run:
@@ -95,3 +108,5 @@ Run:
 ```bash
 pip install -r requirements.txt
 python main.py
+
+
