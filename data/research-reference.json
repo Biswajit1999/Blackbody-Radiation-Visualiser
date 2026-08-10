@@ -1,0 +1,29 @@
+{
+  "title": "Blackbody Radiation Visualiser",
+  "description": "Interactive Planck-law laboratory for stellar spectra, Wien displacement, Stefan-Boltzmann scaling and colour-temperature intuition.",
+  "equations": [
+    "Planck spectral radiance B_lambda(T)",
+    "Wien displacement lambda_max T = b",
+    "Stefan-Boltzmann flux F = sigma T^4"
+  ],
+  "references": [
+    "Planck, M., 1901. On the law of distribution of energy in the normal spectrum. Annalen der Physik, 4, pp.553-563."
+  ],
+  "anchors": [
+    {
+      "x": 3000,
+      "y": 966,
+      "label": "M-star Wien peak nm"
+    },
+    {
+      "x": 5772,
+      "y": 502,
+      "label": "solar photosphere Wien peak nm"
+    },
+    {
+      "x": 10000,
+      "y": 290,
+      "label": "A-star Wien peak nm"
+    }
+  ]
+}
